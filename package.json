@@ -1,0 +1,12 @@
+{
+    "name": "tcp_chat",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+        "build": "pkg client/client.js --target node8-win-x86 | pkg server/server.js --target node8-win-x86"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+    }
+}
