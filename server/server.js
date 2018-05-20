@@ -70,7 +70,7 @@ function removeSocket(socket) {
     if (socket.name) {
         names[socket.name.toLowerCase()] = undefined;
     }
-    broadcast(`${socket.name} left the chat.`);
+    broadcast(`${socket.name} left the chat.`, socket);
 }
 
 function handleData(socket, data) {
@@ -153,7 +153,7 @@ function broadcast(message, sender) {
         socket.write(`${message}\n`);
     });
 
-    console.log(message);
+    console.log(`${sender.info}: ${message}`);
 }
 
 
