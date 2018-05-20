@@ -25,7 +25,7 @@ let ip = args.ip || '127.0.0.1';
 let socket = new net.Socket();
 try {
     socket.connect(port, ip, () => {
-        print('Connected\n');
+        print(`Connected to ${ip}:${port}\n`);
         let data = {
             name: args.n || args.name || ''
         };
