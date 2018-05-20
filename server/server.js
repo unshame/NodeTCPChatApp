@@ -141,7 +141,7 @@ function handleCommand(socket, str) {
         return;
     }
     else {
-        socket.write(`Invalid command "${command}\n"`);
+        socket.write(`Invalid command "${command}"\n`);
     }
 }
 
