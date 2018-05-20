@@ -113,7 +113,7 @@ function handleData(socket, data) {
         else {
             // Обновляем статистику сокета
             updateSocketStats(socket);
-      
+
             // Рассылаем сообщение остальным клиентам
             broadcast(`${socket.name}> ${text}`, socket);
         }
