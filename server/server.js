@@ -8,6 +8,7 @@ let sockets = [];
 let names = {
     "you": {}
 };
+let userIndex = 1;
 let commands = {
     info: (socket) => {
         let info = 'Currently in chat:\n';
@@ -32,7 +33,7 @@ let commands = {
     help: (socket) => {
         let help = 'Commands:\n';
         Object.keys(commands).forEach(command => {
-            help += `  \\${command}\n`;
+            help += `  /${command}\n`;
         });
         socket.write(help);
     }
@@ -96,7 +97,7 @@ function handleData(socket, data) {
     else if(typeof data.text == 'string') {
         let text = data.text;
 
-        if(text[0] == '\\') {
+        if(text[0] == '/') {
             handleCommand(socket, text);
         }
         else{
@@ -111,13 +112,14 @@ function handleData(socket, data) {
 
 function addSocketInfo(socket, data) {
     let name = data.name || '';
+    let lowerCaseName = name.toLowerCase();
 
     if (!name || names[lowerCaseName]) {
         socket.write('Name not provided, invalid or already taken!\n');
-        name = `User${sockets.length}`;
+        name = `User${userIndex++}`;
+        lowerCaseName = name.toLowerCase();
     }
 
-    let lowerCaseName = name.toLowerCase();
     socket.name = name;
     names[lowerCaseName] = socket;
 
