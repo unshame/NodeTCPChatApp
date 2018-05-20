@@ -5,15 +5,15 @@ const readline = require('readline');
 let port = args.p || args.port || 5000;
 let ip = args.ip || '127.0.0.1';
 
-// Открываем сокет для связи с сервером
-let socket = new net.Socket();
+// Сокет для связи с сервером
+let client;
 
 // Считыватель строк из консоли
 let reader;
 
 // Пытаемся подключиться к серверу
 try {
-    socket.connect(port, ip, () => {
+    client = net.createConnection(port, ip, () => {
         print(`Connected to ${ip}:${port}\n`);
 
         // Отправляем имя клиента после подключения
@@ -21,7 +21,7 @@ try {
             name: args.n || args.name || ''
         };
 
-        socket.write(JSON.stringify(data));
+        client.write(JSON.stringify(data));
 
         // начинаем считывание из консоли
         reader = createReader('You> ');
@@ -34,18 +34,18 @@ catch(err) {
 }
 
 // Обработчик данных от сервера
-socket.on('data', data => {
+client.on('data', data => {
     print(data.toString());
 });
 
 // Обработчик закрытия соединения
-socket.on('close', () => {
+client.on('close', () => {
     print('Connection closed\n');
     process.exit(0);
 });
 
 // Обработчик обрыва соединения
-socket.on('error', err => {
+client.on('error', err => {
     print(`${err}\n`);
     process.exit(1);
 });
@@ -70,7 +70,7 @@ function createReader(prompt) {
         };
 
         // Преобразовываем текст в JSON строку и передаем серверу
-        socket.write(JSON.stringify(data));
+        client.write(JSON.stringify(data));
 
         // Читаем дальше
         reader.prompt();
