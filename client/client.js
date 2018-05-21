@@ -6,27 +6,14 @@ let port = args.p || args.port || 5000;
 let ip = args.ip || '127.0.0.1';
 
 // Сокет для связи с сервером
-let client;
+let client = null;
 
 // Считыватель строк из консоли
-let reader;
+let reader = null;
 
 // Пытаемся подключиться к серверу
 try {
-    client = net.createConnection(port, ip, () => {
-        print(`Connected to ${ip}:${port}\n`);
-
-        // Отправляем имя клиента после подключения
-        let data = {
-            name: args.n || args.name || ''
-        };
-
-        client.write(JSON.stringify(data));
-
-        // начинаем считывание из консоли
-        reader = createReader('You> ');
-        reader.prompt();
-    });
+    client = net.createConnection(port, ip, onConnect);
 }
 catch(err) {
     print(`${err}\n`);
@@ -40,15 +27,33 @@ client.on('data', data => {
 
 // Обработчик закрытия соединения
 client.on('close', () => {
-    print('Connection closed\n');
+    reader = null;
+    print('Connection closed.\n');
     process.exit(0);
 });
 
 // Обработчик обрыва соединения
 client.on('error', err => {
+    reader = null;
     print(`${err}\n`);
     process.exit(1);
 });
+
+// Отправляем имя и начинаем считывать из консоли после подключения
+function onConnect() {
+    print(`Connected to ${ip}:${port}\n`);
+
+    // Отправляем имя клиента после подключения
+    let data = {
+        name: args.n || args.name || ''
+    };
+
+    client.write(JSON.stringify(data));
+
+    // Начинаем считывание из консоли
+    reader = createReader('You> ');
+    reader.prompt();
+}
 
 // Создает и возвращает считыватель строк
 function createReader(prompt) {
@@ -74,6 +79,16 @@ function createReader(prompt) {
 
         // Читаем дальше
         reader.prompt();
+    });
+
+    // Обработчик Ctrl+D - закрываем соединени
+    reader.on('close', () => {
+        client.destroy();
+    });
+
+    // Обработчик Ctrl+C - закрываем соединени
+    reader.on('SIGINT', () => {
+        client.destroy();
     });
 
     return reader;
