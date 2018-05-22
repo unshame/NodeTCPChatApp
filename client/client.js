@@ -99,7 +99,7 @@ function print(str) {
 
     // Очищаем строку и переводим курсор в нулевую позицию,
     // чтобы промпт не выводился со строкой
-    readline.clearLine();
+    readline.clearLine(process.stdout);
     readline.cursorTo(process.stdout, 0);
 
     // Выводим строку
